@@ -12,7 +12,6 @@ import { computed, defineComponent, ref } from "vue";
 import { default as Button } from "./tools/Button.vue";
 import { faSearch } from "@fortawesome/free-solid-svg-icons";
 import { ButtonType } from "./tools/settings";
-import { search } from "./api/api";
 import { Post } from "./types/post";
 
 export default defineComponent({

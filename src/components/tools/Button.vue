@@ -57,7 +57,7 @@ export default defineComponent({
   },
 })
 </script>
-<style land="postcss" scoped>
+<style lang="css" scoped>
   button {
     outline: none;
     cursor: pointer;

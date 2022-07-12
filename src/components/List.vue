@@ -137,7 +137,6 @@ export default defineComponent({
           return  "post-app-logo maximized";
         return "post-app-logo";  
       })
-
     });
     
     const toggleList = (type: ListType) => {

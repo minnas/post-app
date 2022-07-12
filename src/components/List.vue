@@ -6,7 +6,7 @@
           <Button :icon="LogoZoomBtn" :type="ButtonType.ICON_ONLY" :label="LogoZoomLabel" @click="resize" :btnStyle="infoBtnStyles"/>
           <Button :icon="faTimes" :type="ButtonType.ICON_ONLY" label="Hide Logo" @click="toggleLogo" :btnStyle="infoBtnStyles"/>
         </div>
-        <img alt="Post App logo" src="../assets/logo.png" :class="['post-app-logo',{ 'maximized': logoMaximized }]"/>
+        <img alt="Post App logo" src="../assets/logo.png" :class="logoClass"/>
       </div>
     </transition>
     <transition name="toogleInfo">
@@ -118,7 +118,13 @@ export default defineComponent({
         if(options.logoMaximized)
           return "minimize";
         return "maximize";  
+      }),
+      logoClass: computed(() => {
+        if(options.logoMaximized)
+          return  "post-app-logo maximized";
+        return "post-app-logo";  
       })
+
     });
     
     const toggleList = (type: ListType) => {
@@ -180,8 +186,11 @@ export default defineComponent({
         return true;
       },
       addToBookmarks(item: Post) {
-        options.bookMarked.push(item);
-        return true;
+        const index = options.bookMarked.findIndex(itm => itm.id === item.id);
+        if(index < 0) {
+          options.bookMarked.push(item);
+          return true;
+        }
       },
       removeFromBookmarks(id: string) {
         const index = options.bookMarked.findIndex(item => item.id === id);
@@ -225,6 +234,7 @@ export default defineComponent({
   .toogleInfo-enter-from,
   .toogleInfo-leave-to {
     opacity: 0;
+    height: 0;
   }
   .posts-list,
   .search-result {

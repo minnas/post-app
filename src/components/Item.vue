@@ -53,14 +53,15 @@
               class="bookmark"
             />
           </FontAwesomeLayers>
+          <FontAwesomeIcon :icon="faTimesCircle" class="remove-flag-icon" />
         </button>
-        <Button :icon="faPen" label="edit" :type="ButtonType.ICON_ONLY" @click="edit"/>
+        <Button :icon="faPen" label="edit" :type="ButtonType.ICON_ONLY" @click="edit" v-if="showEditBtn"/>
       </div>
     </div>
    </div> 
 </template>
 <script lang="ts">
-import { computed, defineComponent, reactive, toRefs } from "vue";
+import { defineComponent, reactive, toRefs } from "vue";
 import { IItemStore } from "./types/actions";
 import { default as Button } from "./tools/Button.vue";
 import { ButtonType } from "./tools/settings";
@@ -68,7 +69,7 @@ import {
   FontAwesomeIcon,
   FontAwesomeLayers,
 } from "@fortawesome/vue-fontawesome";
-import {faPen, faCheck, faTimes, faCircle as faCircleSolid, faBookmark, faTrash } from "@fortawesome/free-solid-svg-icons";
+import {faPen, faCheck, faTimes, faCircle as faCircleSolid, faBookmark, faTrash, faTimesCircle } from "@fortawesome/free-solid-svg-icons";
 import { faCircle } from "@fortawesome/free-regular-svg-icons";
 import { Post } from "./types/post";
 import { ListType } from "./types/list";
@@ -86,7 +87,8 @@ export default defineComponent({
         isEditMode: false,
         showBookmarkIcon: props.type === ListType.POSTS || props.type === ListType.SEARCH,
         showRemoveBookmarkIcon: props.type as ListType === ListType.BOOKMARK,
-        showRemoveBtn: props.type as ListType === ListType.POSTS,
+        showRemoveBtn: false,
+        showEditBtn: props.type as ListType === ListType.POSTS
       });
       
       const edit = () => {
@@ -126,6 +128,7 @@ export default defineComponent({
           save,
           close,
           remove,
+          faTimesCircle,
           ...toRefs(options)
       };
     },
@@ -194,16 +197,30 @@ export default defineComponent({
   }
   button.bookmark-btn.remove .outer-circle,
   button.bookmark-btn.remove .bookmark {
-     color: rgb(68, 66, 66, .5);
+     color: rgb(68, 66, 66);
   }
   button.bookmark-btn.remove:hover .inner-circle {
-    color:rgb(0, 0, 0, .7);
+    color: rgba(68, 66, 66, .2);
   }
   button.bookmark-btn.remove:hover .bookmark {
-    color:rgb(0, 0, 0, .2);
+    color: rgba(68, 66, 66, .7);
   }
   button.bookmark-btn.remove:hover .outer-circle {
-    color:rgb(0, 0, 0, .2);
+    color: rgba(68, 66, 66, .7);
+  }
+  button.bookmark-btn.remove {
+    position: relative;
+  }
+  button.bookmark-btn.remove:hover   .remove-flag-icon {
+   color: rgba(68, 66, 66, .5);
+  }
+  .remove-flag-icon {
+    position: absolute;
+    top: 0;
+    right: 9px;
+    background-color: #ffffff;
+    border-radius: 50%;
+    color: rgb(68, 66, 66);
   }
   
 </style>

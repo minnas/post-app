@@ -1,10 +1,12 @@
 <template>
   <div class="info-block">
-    <div class="info-tools">
-      <Button :icon="faTimes" :type="ButtonType.ICON_ONLY" label="close" @click="close"/>
-    </div>
-    <div class="info-block-inner">
-      <div>{{infoText}}</div>
+    <div class="info-block-container">
+      <div class="info-tools">
+        <Button :icon="faTimes" :type="ButtonType.ICON_ONLY" label="close" @click="close"/>
+      </div>
+      <div class="info-block-inner">
+        <div>{{infoText}}</div>
+      </div>
     </div>
   </div>
 </template>
@@ -44,9 +46,22 @@ export default defineComponent({
     max-width: 30rem;
     font-size: 1rem;
     box-shadow: 1px 2px rgb(40, 26, 234);
-    padding: .5rem;
+    padding: 1rem;
     border-radius: 5px;
-    background-color:  rgb(40, 26, 234, 0.4);
+    background-image: url("../assets/info.png");
+    background-repeat: no-repeat;
+    background-size: cover;
+    color: #000;
+  }
+  .info-block-container {
+    background-color: rgba(255, 255, 255, 0.6);
+    -webkit-backdrop-filter: blur(5px);
+    backdrop-filter: blur(5px);
+    padding-bottom: 1rem;
+    border-radius: 1rem;
+  }
+  .info-block-inner {
+    font-weight: bold;
   }
   .info-block .info-tools {
     display: flex;

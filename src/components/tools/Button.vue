@@ -75,6 +75,7 @@ export default defineComponent({
   }
   button:not(.only-icon) {
     box-shadow: .2rem .2rem var(--var-color);
+    border-radius: 5px;
   }
   button:hover {
     color:#080808;

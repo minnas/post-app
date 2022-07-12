@@ -23,31 +23,72 @@
         <div class="summary">{{body}}</div>
       </div>
       <div class="actions">
+        <Button :icon="faTrash" label="remove" v-if="showRemoveBtn" @click="remove" :type="ButtonType.ICON_ONLY"/>
+        <button class="bookmark-btn" @click="bookmark" v-if="showBookmarkIcon" title="Add to bookmarks">
+          <FontAwesomeLayers class="fa-3x">
+            <FontAwesomeIcon
+              :icon="faCircleSolid"
+              transform="shrink-2"
+              class="inner-circle"
+            />
+            <FontAwesomeIcon :icon="faCircle" transform="shrink-2" />
+            <FontAwesomeIcon
+              :icon="faBookmark"
+              transform="shrink-10"
+              class="bookmark"
+            />
+          </FontAwesomeLayers>
+        </button>
+        <button class="bookmark-btn remove" @click="removeBookmark" v-if="showRemoveBookmarkIcon" title="Remove from bookmarks">
+          <FontAwesomeLayers class="fa-3x">
+            <FontAwesomeIcon
+              :icon="faCircleSolid"
+              transform="shrink-2"
+              class="inner-circle"
+            />
+            <FontAwesomeIcon :icon="faCircle" transform="shrink-2" class="outer-circle"/>
+            <FontAwesomeIcon
+              :icon="faBookmark"
+              transform="shrink-10"
+              class="bookmark"
+            />
+          </FontAwesomeLayers>
+        </button>
         <Button :icon="faPen" label="edit" :type="ButtonType.ICON_ONLY" @click="edit"/>
       </div>
     </div>
    </div> 
 </template>
 <script lang="ts">
-import { defineComponent, reactive, toRefs } from "vue";
+import { computed, defineComponent, reactive, toRefs } from "vue";
 import { IItemStore } from "./types/actions";
 import { default as Button } from "./tools/Button.vue";
 import { ButtonType } from "./tools/settings";
-import {faPen, faCheck, faTimes } from "@fortawesome/free-solid-svg-icons";
+import {
+  FontAwesomeIcon,
+  FontAwesomeLayers,
+} from "@fortawesome/vue-fontawesome";
+import {faPen, faCheck, faTimes, faCircle as faCircleSolid, faBookmark, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faCircle } from "@fortawesome/free-regular-svg-icons";
 import { Post } from "./types/post";
+import { ListType } from "./types/list";
 
 export default defineComponent({
     props: {
       item: Object as () => Post,
       itemStore: Object as () => IItemStore,
+      type: Object as () => ListType      
     },
     setup(props) {
       const options = reactive({
         title: props.item?.title,
         body: props.item?.body,
-        isEditMode: false
+        isEditMode: false,
+        showBookmarkIcon: props.type === ListType.POSTS || props.type === ListType.SEARCH,
+        showRemoveBookmarkIcon: props.type as ListType === ListType.BOOKMARK,
+        showRemoveBtn: props.type as ListType === ListType.POSTS,
       });
-
+      
       const edit = () => {
         options.isEditMode = true;
       };
@@ -57,21 +98,38 @@ export default defineComponent({
         props.itemStore?.update({...props.item, title, body} as Post);
         close();
       };
+      const bookmark = () => {
+        props.itemStore?.addToBookmarks(props.item as Post);
+      };
       const close = () => {
         options.isEditMode = false;
       };
+      const removeBookmark = () => {
+        props.itemStore?.removeFromBookmarks(props.item?.id as string);
+      };      
+      const remove = () => {
+        props.itemStore?.remove(props.item?.id as string);
+      };
+
       return {
           ButtonType,
           faPen,
           edit,
           faCheck,
           faTimes,
+          faCircleSolid,
+          faCircle,
+          faBookmark,
+          faTrash,
+          removeBookmark,
+          bookmark,
           save,
           close,
+          remove,
           ...toRefs(options)
       };
     },
-    components: { Button }
+    components: { Button, FontAwesomeIcon, FontAwesomeLayers }
 })
 </script>
 <style lang="css" scoped>
@@ -121,4 +179,31 @@ export default defineComponent({
     justify-content: flex-end;
     align-items: center;
   }
+  button.bookmark-btn {
+    border: none;
+    outline: none;
+    transition: all 0.15s ease;
+    background-color: transparent;
+    cursor: pointer;
+  }
+  button.bookmark-btn:not(.remove):hover .inner-circle {
+    color:rgb(68, 66, 66, .5);
+  }
+  .inner-circle {
+     color: #ffffff;
+  }
+  button.bookmark-btn.remove .outer-circle,
+  button.bookmark-btn.remove .bookmark {
+     color: rgb(68, 66, 66, .5);
+  }
+  button.bookmark-btn.remove:hover .inner-circle {
+    color:rgb(0, 0, 0, .7);
+  }
+  button.bookmark-btn.remove:hover .bookmark {
+    color:rgb(0, 0, 0, .2);
+  }
+  button.bookmark-btn.remove:hover .outer-circle {
+    color:rgb(0, 0, 0, .2);
+  }
+  
 </style>

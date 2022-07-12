@@ -78,7 +78,7 @@ export default defineComponent({
   }
   button:hover {
     color:#080808;
-    box-shadow: .2rem .2rem #080808;
+    opacity: 0.7;
     font-size: 1.25rem;
   }
   button[disabled] {

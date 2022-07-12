@@ -44,13 +44,14 @@ export default defineComponent({
     max-width: 30rem;
     font-size: 1rem;
     box-shadow: 1px 2px rgb(40, 26, 234);
-    padding: 1rem;
+    padding: .5rem;
     border-radius: 5px;
+    background-color:  rgb(40, 26, 234, 0.4);
   }
   .info-block .info-tools {
     display: flex;
     justify-content: flex-end;
     align-items: right;
-    margin: .25rem .5rem; 
+    margin: 0; 
   }
 </style>

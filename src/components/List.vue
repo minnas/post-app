@@ -3,9 +3,10 @@
     <transition name="toogleInfo">
       <div class="posts-app-logo" v-if="logoVisible">
         <div class="top-bar">
+          <Button :icon="LogoZoomBtn" :type="ButtonType.ICON_ONLY" :label="LogoZoomLabel" @click="resize" :btnStyle="infoBtnStyles"/>
           <Button :icon="faTimes" :type="ButtonType.ICON_ONLY" label="Hide Logo" @click="toggleLogo" :btnStyle="infoBtnStyles"/>
         </div>
-        <img alt="Post App logo" src="../assets/logo.png" />
+        <img alt="Post App logo" src="../assets/logo.png" :class="['post-app-logo',{ 'maximized': logoMaximized }]"/>
       </div>
     </transition>
     <transition name="toogleInfo">
@@ -23,31 +24,53 @@
       </div>
     </transition>
     <div class="search-block"><search v-model:searchResult="searchResult" v-model:posts="posts"/></div>
-    <div class="seach-results-container">
-      <h3>Search results</h3>
-      <div class="search-result">
-        <list-item v-for="(item, i) of searchResult" :key="i" :item-store="itemStore" v-model:item="posts[i]"/>
+    <div class="seach-results-container list-container">
+      <div class="list-header">
+        <h3>Search results</h3>
+        <Button label="toggle" :icon="toggleSearchIcon" :type="ButtonType.ICON_ONLY" @click="toggleList(ListType.SEARCH)"/>
       </div>
+      <transition name="toogleInfo">
+        <div class="search-result" v-show="searchVisible">
+          <list-item v-for="(item, i) of searchResult" :key="i" :item-store="itemStore" v-model:item="posts[i]" :type="ListType.SEARCH"/>
+        </div>
+      </transition>
     </div>
-    <div class="all-posts-container">
-      <h3>All items</h3>
-      <div class="posts-list">
-        <list-item v-for="(item, i) of posts" :key="i" :item-store="itemStore" v-model:item="posts[i]"/>
+    <div class="all-posts-container list-container">
+      <div class="list-header">
+        <h3>All items</h3>
+        <Button label="toggle" :icon="toggleListIcon" :type="ButtonType.ICON_ONLY" @click="toggleList(ListType.POSTS)"/>
       </div>
+      <transition name="toogleInfo">
+        <div class="posts-list" v-show="listVisible">
+          <list-item v-for="(item, i) of posts" :key="i" :item-store="itemStore" v-model:item="posts[i]" :type="ListType.POSTS"/>
+        </div>
+      </transition>
+    </div>
+    <div class="bookmark-posts-container list-container">
+      <div class="list-header">
+        <h3>Bookmarked items</h3>
+        <Button label="toggle" :icon="toggleBookmarkIcon" :type="ButtonType.ICON_ONLY" @click="toggleList(ListType.BOOKMARK)"/>
+      </div>
+      <transition name="toogleInfo">
+        <div class="bookmark-list" v-show="bookmarkedVisible">
+          <list-item v-for="(item, i) of bookMarked" :key="i" :item-store="itemStore" v-model:item="bookMarked[i]" :type="ListType.BOOKMARK"/>
+        </div>
+      </transition>
     </div>
   </div>
 </template>
 <script lang="ts">
-import { defineComponent, onMounted, reactive, ref, toRefs } from "vue";
+import { computed, defineComponent, onMounted, reactive, ref, toRefs } from "vue";
 import { IItemStore } from "./types/actions";
 import { default as ListItem} from "./Item.vue"
 import { default as Search} from "./Search.vue"
 import { Post } from "./types/post";
 import { search } from "./api/api";
-import { faInfo, faTimes, faImagePortrait } from "@fortawesome/free-solid-svg-icons";
+import { faInfo, faTimes, faImagePortrait, faChevronDown, faChevronUp, faPlusCircle, faMinusCircle} from "@fortawesome/free-solid-svg-icons";
 
 import { default as Button } from "./tools/Button.vue";
 import { ButtonType, ButtonOptions } from "./tools/settings";
+import { ListType } from "./types/list";
 import { default as Info } from "./Info.vue";
 
 export default defineComponent({
@@ -64,9 +87,54 @@ export default defineComponent({
     const options = reactive({
       posts: [] as Post[],
       searchResult: [] as Post[],
+      bookMarked: [] as Post[],
       visible: false,
-      logoVisible: true
+      logoVisible: true,
+      searchVisible: true,
+      listVisible: true,
+      bookmarkedVisible: false,
+      toggleSearchIcon: computed(() =>{
+        if(options.searchVisible)
+          return faChevronUp;
+        return faChevronDown;  
+        }),
+      toggleListIcon: computed(() =>{
+        if(options.listVisible)
+          return faChevronUp;
+        return faChevronDown;  
+      }),
+      toggleBookmarkIcon: computed(() =>{
+        if(options.bookmarkedVisible)
+          return faChevronUp;
+        return faChevronDown;  
+      }),
+      logoMaximized: false,
+      LogoZoomBtn: computed(() => {
+        if(options.logoMaximized)
+          return faMinusCircle;
+        return faPlusCircle;  
+      }),
+      LogoZoomLabel: computed(() => {
+        if(options.logoMaximized)
+          return "minimize";
+        return "maximize";  
+      })
     });
+    
+    const toggleList = (type: ListType) => {
+      switch(type) {
+        case ListType.BOOKMARK:
+          options.bookmarkedVisible = !options.bookmarkedVisible;
+        break;      
+        case ListType.SEARCH:
+          options.searchVisible = !options.searchVisible;
+        break;      
+        default:
+          options.listVisible = !options.listVisible;
+        break;      
+      }
+      return false;
+    };
 
     const infoBtnStyles = {
       alignSelf: "flex-start"
@@ -87,11 +155,17 @@ export default defineComponent({
       options.logoVisible = !options.logoVisible;
     };
 
+    const resize = () => {
+      options.logoMaximized = !options.logoMaximized;
+    };
+
     const itemStore = {
       remove(id: string) {
-        const index = posts.value.findIndex(item => item.id === id);
+        const index = options.posts.findIndex(item => item.id === id);
         if(index > -1) {
-          posts.value.splice(index, 1);
+          console.log("remove item from index " + index + " " + options.posts.length);
+          options.posts.splice(index, 1);
+          console.log(options.posts.length);
           return true;
         }
         return false;
@@ -104,6 +178,18 @@ export default defineComponent({
           options.posts.push(item);
         }
         return true;
+      },
+      addToBookmarks(item: Post) {
+        options.bookMarked.push(item);
+        return true;
+      },
+      removeFromBookmarks(id: string) {
+        const index = options.bookMarked.findIndex(item => item.id === id);
+        if(index > -1) {
+          options.bookMarked.splice(index, 1);
+          return true;
+        }
+        return false;
       }
     } as IItemStore;
 
@@ -116,7 +202,10 @@ export default defineComponent({
       ...toRefs(options),
       ButtonType,
       infoBtnStyles,
-      toggleLogo
+      toggleLogo,
+      toggleList,
+      resize,
+      ListType
     };
 
   }
@@ -156,7 +245,22 @@ export default defineComponent({
     grid-row-gap: .25rem;
   }
   h3 {
-    font-size: 1.2rem;
     font-weight: bold;
+  }
+  .list-header {
+    font-size: 1.2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 30rem;
+    margin: auto;
+  }
+  .post-app-logo {
+    max-height: 10rem;
+    border-radius: 25%;
+    transition: all 0.15s ease;
+  }
+  .post-app-logo.maximized {
+    max-height: 15rem;
   }
 </style>

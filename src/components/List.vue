@@ -16,7 +16,19 @@
     </transition>
     <div class="header">
       <h1>Posts App</h1>
-      <Button :icon="faInfo" :type="ButtonType.ICON_ONLY" label="Show Info" @click="showInfo" :btnStyle="infoBtnStyles"/>
+      <Tooltip
+        v-model:type="TooltipType.RIGHT"
+        class="info-tooltip"
+      >
+        <template #content>
+          <Button :icon="faInfo" :type="ButtonType.ICON_ONLY" @click="showInfo" :btnStyle="infoBtnStyles"/>
+        </template>
+        <template #tooltip>
+          <span>
+            Show the About info of this app
+          </span>
+        </template>
+      </Tooltip>
     </div>
     <transition name="toogleInfo">
       <div class="info-block" v-show="visible">
@@ -60,16 +72,16 @@
   </div>
 </template>
 <script lang="ts">
-import { computed, defineComponent, onMounted, reactive, ref, toRefs } from "vue";
+import { computed, defineComponent, onMounted, reactive, toRefs } from "vue";
 import { IItemStore } from "./types/actions";
 import { default as ListItem} from "./Item.vue"
 import { default as Search} from "./Search.vue"
 import { Post } from "./types/post";
 import { search } from "./api/api";
 import { faInfo, faTimes, faImagePortrait, faChevronDown, faChevronUp, faPlusCircle, faMinusCircle} from "@fortawesome/free-solid-svg-icons";
-
+import { default as Tooltip } from "./tools/Tooltip.vue";
 import { default as Button } from "./tools/Button.vue";
-import { ButtonType, ButtonOptions } from "./tools/settings";
+import { ButtonType, ButtonOptions, TooltipType } from "./tools/settings";
 import { ListType } from "./types/list";
 import { default as Info } from "./Info.vue";
 
@@ -80,10 +92,10 @@ export default defineComponent({
     ListItem,
     Search,
     Info,
-    Button
+    Button,
+    Tooltip
   },
   setup(props) {
-    const posts = ref([] as Post[]);
     const options = reactive({
       posts: [] as Post[],
       searchResult: [] as Post[],
@@ -93,6 +105,7 @@ export default defineComponent({
       searchVisible: true,
       listVisible: true,
       bookmarkedVisible: false,
+      tooltipVisible: false,
       toggleSearchIcon: computed(() =>{
         if(options.searchVisible)
           return faChevronUp;
@@ -169,9 +182,7 @@ export default defineComponent({
       remove(id: string) {
         const index = options.posts.findIndex(item => item.id === id);
         if(index > -1) {
-          console.log("remove item from index " + index + " " + options.posts.length);
           options.posts.splice(index, 1);
-          console.log(options.posts.length);
           return true;
         }
         return false;
@@ -214,7 +225,8 @@ export default defineComponent({
       toggleLogo,
       toggleList,
       resize,
-      ListType
+      ListType,
+      TooltipType
     };
 
   }

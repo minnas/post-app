@@ -3,7 +3,6 @@ export enum ButtonType {
   DEFAULT  
 };
 
-
 export type ButtonOptions = {
   margin?: String,
   padding?: String,
@@ -21,3 +20,32 @@ export enum ButtonDefaults{
   BACKGROUND = "transparent",
   ALING_SELF = "unset"
 };
+
+
+export enum TooltipType {
+  TOP,
+  BOTTOM,
+  LEFT,
+  RIGHT  
+};
+
+export type TooltipOptions = {
+  bgColor?: string;
+  fontColor?: string;
+  fontFamily?: string;
+  arrowBorderColor?: string;
+  arrowBorderShadowColor?: string;
+  border?: string;
+  left?: any;
+  right?: string;
+  top?: string;
+  minWidth?: string;
+  textAlign?: string;
+  borderRadius?: string;
+  padding?: string;
+  zIndex?: number;
+  animationSpeed?: string;
+  animationEasing?: string;
+};
+
+

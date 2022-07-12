@@ -13,8 +13,8 @@
         </div>
       </div>
       <div class="edit-actions">
-        <Button :icon="faCheck" label="Save" @click="save"/>
-        <Button :icon="faTimes" label="Close" @click="close"/>
+        <Button :icon="faCheck" label="Save" @click="save" :btnStyle="editBlockBtnStyles"/>
+        <Button :icon="faTimes" label="Close" @click="close" :btnStyle="editBlockBtnStyles"/>
       </div>
     </div>
     <div class="details-container" v-show="!isEditMode">
@@ -64,7 +64,7 @@
 import { defineComponent, reactive, toRefs } from "vue";
 import { IItemStore } from "./types/actions";
 import { default as Button } from "./tools/Button.vue";
-import { ButtonType } from "./tools/settings";
+import { ButtonOptions, ButtonType } from "./tools/settings";
 import {
   FontAwesomeIcon,
   FontAwesomeLayers,
@@ -113,6 +113,10 @@ export default defineComponent({
         props.itemStore?.remove(props.item?.id as string);
       };
 
+      const editBlockBtnStyles = {
+        padding: ".5rem"
+      } as ButtonOptions;
+
       return {
           ButtonType,
           faPen,
@@ -129,7 +133,8 @@ export default defineComponent({
           close,
           remove,
           faTimesCircle,
-          ...toRefs(options)
+          ...toRefs(options),
+          editBlockBtnStyles
       };
     },
     components: { Button, FontAwesomeIcon, FontAwesomeLayers }

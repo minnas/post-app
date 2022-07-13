@@ -152,11 +152,14 @@ export default defineComponent({
   .details-container,
   .edit-container {
     padding: .15rem;
-    box-shadow: 1px 2px rgb(36, 35, 35);
+    box-shadow: 1px 2px rgba(0,0,0,.5);
     margin-bottom: .85rem;
-    max-width: 30rem;
-    min-width: 30rem;
     font-size: 1rem;
+    padding: .25rem 1rem;
+  }
+  .details-container .title {
+    font-weight: 700;
+    margin-bottom: .25rem;
   }
   .edit-container {
     padding: 2rem .15rem;
@@ -175,7 +178,7 @@ export default defineComponent({
   .edit-block textarea {
     display: block;
     margin: 1rem;
-    min-width: 25rem;
+    min-width: 40rem;
     min-height: 5rem;
   }
   .edit-block label {

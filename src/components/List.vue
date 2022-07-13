@@ -44,6 +44,14 @@
       </div>
       <transition name="toogleInfo">
         <div class="search-result" v-show="searchVisible">
+          <transition name="toogleInfo">
+            <PlaceHolder v-if="searchResult.length < 1">
+              <template #content>
+                <FontAwesomeIcon :icon="faBroomBall" size="lg" class="placeholder-icon"/>
+                <span>Hmm.. Nothing here at the moment</span>
+              </template>
+            </PlaceHolder>
+          </transition>
           <list-item v-for="(item, i) of searchResult" :key="i" :item-store="itemStore" v-model:item="posts[i]" :type="ListType.SEARCH"/>
         </div>
       </transition>
@@ -66,6 +74,14 @@
       </div>
       <transition name="toogleInfo">
         <div class="bookmark-list" v-show="bookmarkedVisible">
+          <transition name="toogleInfo">
+            <PlaceHolder v-if="bookMarked.length < 1">
+              <template #content>
+                <FontAwesomeIcon :icon="faBroomBall" size="lg" class="placeholder-icon"/>
+                <span>Hmm.. Nothing here at the moment</span>
+              </template>
+            </PlaceHolder>
+          </transition>
           <list-item v-for="(item, i) of bookMarked" :key="i" :item-store="itemStore" v-model:item="bookMarked[i]" :type="ListType.BOOKMARK"/>
         </div>
       </transition>
@@ -79,13 +95,18 @@ import { default as ListItem} from "./Item.vue"
 import { default as Search} from "./Search.vue"
 import { Post } from "./types/post";
 import { search } from "./api/api";
-import { faInfo, faTimes, faImagePortrait, faChevronDown, faChevronUp, faPlusCircle, faMinusCircle} from "@fortawesome/free-solid-svg-icons";
+import { faInfo, faTimes, faImagePortrait, faChevronDown, faChevronUp, faPlusCircle, faMinusCircle, faBroomBall} from "@fortawesome/free-solid-svg-icons";
 import { default as Tooltip } from "./tools/Tooltip.vue";
 import { default as Button } from "./tools/Button.vue";
 import { ButtonType, ButtonOptions, TooltipType, ToastType, ToasOptions } from "./tools/settings";
 import { ListType } from "./types/list";
 import { default as Info } from "./Info.vue";
 import { default as Toast } from "./tools/Toast.vue";
+import { default as PlaceHolder} from "./tools/Palceholder.vue";
+import {
+  FontAwesomeIcon
+} from "@fortawesome/vue-fontawesome";
+
 
 export default defineComponent({
   props: {
@@ -96,7 +117,9 @@ export default defineComponent({
     Info,
     Button,
     Tooltip,
-    Toast
+    Toast,
+    PlaceHolder,
+    FontAwesomeIcon
   },
   setup(props) {
     const options = reactive({
@@ -230,6 +253,7 @@ export default defineComponent({
       itemStore,
       faInfo,
       faTimes,
+      faBroomBall,
       faImagePortrait,
       showInfo,
       ...toRefs(options),
@@ -265,12 +289,19 @@ export default defineComponent({
   .search-result {
     max-height: 25rem;
     overflow-y: scroll;
+    max-width: 45rem;
+    box-shadow: 2px 5px rgba(0,0,0,.4);
+  }
+  .list-container {
+    max-width: 45rem;
+    min-width: 45rem;
+    margin: auto;
   }
   .posts-app-logo .top-bar {
     display: flex;
     justify-content: flex-end;
     align-items: center;
-    max-width: 30rem;
+    max-width: 35rem;
     margin: auto;
   }
   .info-block {
@@ -281,19 +312,21 @@ export default defineComponent({
   }
   h3 {
     font-weight: bold;
+    filter: drop-shadow(20px 10px 4px rgba(0,0,0,.35));    
   }
   .list-header {
     font-size: 1.2rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    max-width: 30rem;
     margin: auto;
   }
   .post-app-logo {
     max-height: 10rem;
     border-radius: 25%;
     transition: all 0.15s ease;
+    filter: drop-shadow(20px 10px 4px rgba(0,0,0,.4));    
+
   }
   .post-app-logo.maximized {
     max-height: 15rem;

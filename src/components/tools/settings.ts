@@ -48,4 +48,14 @@ export type TooltipOptions = {
   animationEasing?: string;
 };
 
+export enum ToastType {
+  ACTION_REMOVE = 1,
+  ACTION_ADD = 2,
+};
+
+export type ToasOptions = {
+  title?: string,
+  msg?: string,
+  type: ToastType
+};
 

@@ -14,6 +14,7 @@
         <Button :icon="faImagePortrait" :type="ButtonType.ICON_ONLY" label="Show Logo" @click="toggleLogo" :btnStyle="infoBtnStyles"/>
       </div>
     </transition>
+    <Toast v-model:visible="toastVisible" :message="toastMsg" :title="toastTitle" :type="toastType"/>
     <div class="header">
       <h1>Posts App</h1>
       <Tooltip
@@ -81,9 +82,10 @@ import { search } from "./api/api";
 import { faInfo, faTimes, faImagePortrait, faChevronDown, faChevronUp, faPlusCircle, faMinusCircle} from "@fortawesome/free-solid-svg-icons";
 import { default as Tooltip } from "./tools/Tooltip.vue";
 import { default as Button } from "./tools/Button.vue";
-import { ButtonType, ButtonOptions, TooltipType } from "./tools/settings";
+import { ButtonType, ButtonOptions, TooltipType, ToastType, ToasOptions } from "./tools/settings";
 import { ListType } from "./types/list";
 import { default as Info } from "./Info.vue";
+import { default as Toast } from "./tools/Toast.vue";
 
 export default defineComponent({
   props: {
@@ -93,7 +95,8 @@ export default defineComponent({
     Search,
     Info,
     Button,
-    Tooltip
+    Tooltip,
+    Toast
   },
   setup(props) {
     const options = reactive({
@@ -106,6 +109,10 @@ export default defineComponent({
       listVisible: true,
       bookmarkedVisible: false,
       tooltipVisible: false,
+      toastVisible: false,
+      toastType: ToastType.ACTION_ADD,
+      toastMsg: "",
+      toastTitle: "",
       toggleSearchIcon: computed(() =>{
         if(options.searchVisible)
           return faChevronUp;
@@ -176,7 +183,12 @@ export default defineComponent({
     const resize = () => {
       options.logoMaximized = !options.logoMaximized;
     };
-
+    const showToast = ( settings: ToasOptions ) => {
+        options.toastTitle = settings.title as string;
+        options.toastMsg = settings.msg as string;
+        options.toastType = settings.type as ToastType;
+        options.toastVisible = true;
+    };
     const itemStore = {
       remove(id: string) {
         const index = options.posts.findIndex(item => item.id === id);
@@ -199,6 +211,7 @@ export default defineComponent({
         const index = options.bookMarked.findIndex(itm => itm.id === item.id);
         if(index < 0) {
           options.bookMarked.push(item);
+          showToast({title: "Bookmark", msg: "Post added to bookmarks"} as ToasOptions);
           return true;
         }
       },
@@ -206,6 +219,7 @@ export default defineComponent({
         const index = options.bookMarked.findIndex(item => item.id === id);
         if(index > -1) {
           options.bookMarked.splice(index, 1);
+          showToast({title: "Bookmark", msg: "Post removed from bookmarks", type: ToastType.ACTION_REMOVE} as ToasOptions);
           return true;
         }
         return false;

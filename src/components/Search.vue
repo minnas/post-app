@@ -1,16 +1,17 @@
 <template>
   <div class="search-coctail">
     <h3>Search post by title</h3>
-    <div>
+    <div class="search-tools">
       <input type="text" v-model="searchStr"/>    
       <Button :type="ButtonType.ICON_ONLY" :icon="faSearch" @click="searchByTitle" :disabled="disabled"/>
+      <Button :type="ButtonType.ICON_ONLY" :icon="faBan" @click="clear" :disabled="disabled"/>
     </div>
   </div>  
 </template>
 <script lang="ts">
 import { computed, defineComponent, ref } from "vue";
 import { default as Button } from "./tools/Button.vue";
-import { faSearch } from "@fortawesome/free-solid-svg-icons";
+import { faSearch, faBan } from "@fortawesome/free-solid-svg-icons";
 import { ButtonType } from "./tools/settings";
 import { Post } from "./types/post";
 
@@ -32,13 +33,20 @@ export default defineComponent({
       }
     };
 
+    const clear = () => {
+      emit("update:searchResult", [] as Post[]);
+      searchStr.value = "";
+    };
+
     return {
       faSearch,
+      faBan,
       ButtonType,
       searchByTitle,
       postDetails,
       searchStr,
-      disabled      
+      disabled,
+      clear      
     }    
   },
   components: {
